@@ -3,7 +3,8 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,get_user_model
+from .models import CustomUser
 
 import authentication
 # Create your views here.
@@ -14,14 +15,19 @@ def home(request):
 
 def signup(request):
 
-    if request.method =="Post":
-        usuario =  request.Post['usuario']
-        email = request.Post['email']
-        senha1 = request.Post['senha']
-        senha2 = request.Post['csenha']
+    if request.method =="POST":
+        usuario =  request.POST.get('Usuario')
+        email = request.POST.get('email')
+        senha1 = request.POST.get('senha')
+        senha2 = request.POST.get('senha2')
         
-        myuser = User.objects.create_user(usuario,email,senha1,senha2)
-        myuser.save()
+        if senha1 != senha2:
+            messages.error(request, 'As senhas não correspondem.')
+            return redirect('home')
+
+        user = get_user_model()
+        user = user.objects.create_user(email=email,password=senha1,username=usuario)
+        user.save()
 
         messages.success(request, "Sua conta foi criada com sucesso!")
 
@@ -34,15 +40,14 @@ def signup(request):
 def signin(request):
 
     if request.method == "POST":
-        usuario = request.Post['usuario']
-        senha = request.Post['senha']
+        usuario = request.POST.get('Usuario')
+        senha = request.POST.get('senha')
 
-        usuario = authentication(usuario = usuario,senha = senha)
+        user = authenticate(request, username= usuario, password=senha)
 
         if usuario is not  None:
-            login(request, usuario)
-            usuario = usuario
-            return render(request,"index.html",{'usuario':usuario})
+            login(request, user)
+            return render(request,"index.html",{'usuario':user})
 
         else:
             messages.error(request,"Usuário não encontrado")
