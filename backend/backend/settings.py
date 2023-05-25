@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sql_server.pyodbc',
     'authentication.apps.AuthenticationConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

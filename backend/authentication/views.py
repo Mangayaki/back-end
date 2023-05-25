@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,get_user_model
-from .models import CustomUser
+from .models import CustomUser,UserFav
 
 import authentication
 # Create your views here.
@@ -62,3 +62,12 @@ def signout(request):
     messages.success(request,"Deslogado com sucesso")
 
     return redirect('home')
+
+def fav(request):
+    latest_manga_list = UserFav.objects.filter(usuario_id=2)
+    usuario = get_user_model().objects.get(ID=2).get_username
+    context = {
+        'latest_manga_list' : latest_manga_list,
+        'usuario' : usuario
+    }
+    return render(request, "fav.html", context)

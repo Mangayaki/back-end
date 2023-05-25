@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Aplicação de Enquetes</title>
+</head>
+<body>
+   <h1>
+       Favoritos de {{usuario}}
+   </h1>
+   {% if latest_manga_list %}
+     <ul>
+      {% for manga in latest_manga_list %}
+         <li> <a href="https://kitsu.io/api/edge/anime?filter[id]={{manga.id}}/"> {{ manga.id_manga }} </a></li>
+      {% endfor %}
+     <ul>
+   {% else %}
+       <p> Não existem enquetes abertas para serem respondidas </p>
+   {% endif %}
+   </ul>
+</body>
+</html>
