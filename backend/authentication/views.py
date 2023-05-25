@@ -3,14 +3,30 @@ from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.contrib.auth import authenticate,login,get_user_model
+from django.contrib.auth import authenticate,login,get_user_model,logout
 from .models import CustomUser,UserFav
 
 import authentication
 # Create your views here.
 
 def home(request):
-    return render(request,"index.html")
+    logado = False
+    if request.user.is_authenticated:
+        user_id = request.session.get('user_id')
+        usuario = get_user_model().objects.get(ID=user_id)
+        logado = True
+        context = {
+            'log' : logado,
+            'usuario' : usuario,
+            'id' : user_id
+        }
+    else:
+        context = {
+            'log' : logado,
+            'usuario' : 'none',
+            'id' : 0
+        }
+    return render(request,"index.html", context)
 
 
 def signup(request):
@@ -46,8 +62,9 @@ def signin(request):
         user = authenticate(request, username= usuario, password=senha)
 
         if usuario is not  None:
+            request.session['user_id'] = user.ID
             login(request, user)
-            return render(request,"index.html",{'usuario':user})
+            return redirect('home')
 
         else:
             messages.error(request,"Usuário não encontrado")
@@ -57,17 +74,30 @@ def signin(request):
 
     return render(request,"signin.html")
 
-def signout(request):
-    LOGOUT(request)
-    messages.success(request,"Deslogado com sucesso")
+def logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect(home)
 
-    return redirect('home')
-
-def fav(request):
-    latest_manga_list = UserFav.objects.filter(usuario_id=2)
-    usuario = get_user_model().objects.get(ID=2).get_username
+def fav(request, user_id):
+    fav = UserFav.objects.filter(usuario_id=user_id)
+    usuario = get_user_model().objects.get(ID=user_id).get_username
     context = {
-        'latest_manga_list' : latest_manga_list,
-        'usuario' : usuario
+        'fav':fav,
+        'usuario': usuario
     }
     return render(request, "fav.html", context)
+
+def addfav(request):
+    logado = False
+    if request.user.is_authenticated:
+        logado = True
+        if request.method == "POST":
+            user_id = request.session.get('user_id')
+            manga_id =  request.POST.get('Manga')
+            
+            manga = UserFav(id_manga=manga_id,usuario_id=user_id)
+            manga.save()
+            messages.success(request,"Item adicionado com sucesso")
+        
+    return render(request, "addfav.html", {'log':logado})

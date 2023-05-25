@@ -22,17 +22,25 @@
         {%endfor%}
         
         <h3>Bem vindo ao Mangayaki ^^</h3>
-
-        {% if usuario.is_authenticated %}
+        {% csrf_token %}
+        {% if log %}
 
 
         <h3>Ola {{usuario}}</h3>
 
-        <h4> Logado com sucesso</h4> 
-        {% else %}
+        <h4> Voce Esta logado</h4><br> 
+        {% endif %}
         <button type="submit"> <a href="/signup">SignUp</button></a>
         <button type="submit"><a href="/signin">Signin</button></a>
-        <button type="submit"><a herf="/signout">Signout</button></a>
+        <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: inline-block">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        
+        {% if log %}
+        {% csrf_token %}
+        <button type="submit"><a href="/fav/{{id}}">user's favorites</button></a>
+        <button type="submit"><a href="/addfav">add to favorites</button></a>
         {% endif %}
         
         <script src="" async defer></script>
