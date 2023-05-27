@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+''''from dotenv import load_dotenv'''
+import os
+import dotenv
+
+dotenv.load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&bo&pzkta3q)k6kjj3a)lj6mlfun-+n112wp@i!gb_z4c(6q0d'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -76,14 +82,27 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+##        'ENGINE': 'sql_server.pyodbc',
+ #       'NAME' : 'magayaki_backend',
+ ##       'HOST' : os.getenv('DATABASE_HOST'),
+   #     'PORT' : os.getenv('DATABASE_PORT'),
+   #     'USER' : os.getenv('DATABASE_USER'),
+    #    'PASSWORD' : os.getenv('DATABASE_PASSWORD'),
+     #   'OPTIONS': {
+      #      'driver': 'ODBC Driver 17 for SQL Server',
+     #   },
+   # }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME' : 'magayaki_backend',
-        'HOST' : 'DESKTOP-7JJT0MQ\MSSQLSERVER01',
-        'PORT' : '',
-        'USER' : '',
-        'PASSWORD' : '',
+        'ENGINE' : os.getenv('DATABASE_ENGINE'),
+        'NAME': 'Mangayaki',
+        'HOST' : os.getenv('DATABASE_HOST'),
+        'USER' : os.getenv('DATABASE_USER'),
+        'PASSWORD' : os.getenv('DATABASE_PASSWORD'),
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
         },
@@ -118,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br'
 
 TIME_ZONE = 'UTC'
 
