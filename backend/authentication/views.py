@@ -5,6 +5,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,get_user_model,logout
 from .models import CustomUser,UserFav
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.hashers import check_password
+
 
 import authentication
 # Create your views here.
@@ -39,7 +44,7 @@ def signup(request):
         
         if senha1 != senha2:
             messages.error(request, 'As senhas não correspondem.')
-            return redirect('home')
+            #return redirect('home')
 
         user = get_user_model()
         user = user.objects.create_user(email=email,password=senha1,username=usuario)
@@ -51,33 +56,35 @@ def signup(request):
 
 
 
-    return render(request,"signup.html")
+    #return render(request,"signup.html")
 
 def signin(request):
-
     if request.method == "POST":
-        usuario = request.POST.get('Usuario')
-        senha = request.POST.get('senha')
+        email = request.POST.get('email')
+        senha = request.POST.get('password')
 
-        user = authenticate(request, username= usuario, password=senha)
+        user = authenticate(request, email=email, password=senha)
 
-        if usuario is not  None:
-            request.session['user_id'] = user.ID
+        if user is not None:
             login(request, user)
-            return redirect('home')
+            
+            # Gerar o token JWT
+            refresh = RefreshToken.for_user(user)
+            token = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
 
+            return JsonResponse({'message': 'Login bem-sucedido!', 'token': token})
         else:
-            messages.error(request,"Usuário não encontrado")
+            return JsonResponse({'message': 'Credenciais Inválidas'}, status=400)
+    
+    return JsonResponse({'message': 'Método não permitido'}, status=405)
 
-            return redirect('home')
-
-
-    return render(request,"signin.html")
-
-def logout(request):
+def sair(request):
     if request.method == 'POST':
         logout(request)
-        return redirect(home)
+        #return redirect(home)
 
 def fav(request, user_id):
     fav = UserFav.objects.filter(usuario_id=user_id)

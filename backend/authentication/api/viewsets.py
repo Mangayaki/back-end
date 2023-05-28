@@ -9,3 +9,5 @@ class CustomUserViewSet(viewsets.ModelViewSet):
 class UserFavViewSet(viewsets.ModelViewSet):
     queryset = UserFav.objects.all()
     serializer_class = UserFavSerializer
+
+
