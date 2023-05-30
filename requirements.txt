@@ -5,7 +5,10 @@ django-mssql-backend==2.8.1
 django-pyodbc-azure==2.1.0.0
 django-pyodbc-azure-2019==2.1.0.0
 djangorestframework==3.14.0
+djangorestframework-jwt==1.11.0
+djangorestframework-simplejwt==5.2.2
 mssql-django==1.2
+PyJWT==1.7.1
 pyodbc==4.0.39
 python-dotenv==1.0.0
 pytz==2023.3
